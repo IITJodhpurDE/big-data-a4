@@ -1,0 +1,43 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group = 'com.iitj.bigdata'
+version = '1.0-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Bigtable data + admin client in one artifact
+    implementation 'com.google.cloud:google-cloud-bigtable:2.39.0'
+}
+
+application {
+    // Bigtable has no package declaration
+    mainClass = 'Bigtable'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+tasks.register('runBigtable', JavaExec) {
+    group = 'application'
+    description = 'Run the Bigtable application'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = application.mainClass
+}
+
+// Ensure we run from the project root so relative data/ path works
+tasks.named('run', JavaExec).configure {
+    workingDir = project.rootDir
+}
